@@ -1,0 +1,35 @@
+* { box-sizing: border-box; }
+
+body { margin: 0; font-family: sans-serif; }
+
+video {
+  z-index: 1;
+  display: block;
+  margin: 0 auto;
+  background-color: #ccc;
+
+  /* maximize video player size within viewport while maintaining 16:9 format */
+  width: 100vw;
+  height: 56.25vw;
+  max-width: 177.78vh;
+  max-height: 100vh;
+}
+
+#drop_zone {
+  border: 5px solid blue;
+  width:  200px;
+  height: 100px;
+}
+
+#videos {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+#page {
+  height: 100%;
+}
+
+#timeRange {
+  width: 100%;
+}

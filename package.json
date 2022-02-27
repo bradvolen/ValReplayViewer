@@ -1,0 +1,23 @@
+{
+  "name": "val-replay-viewer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev": "vite dev"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bradvolen/ValReplayViewer.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/bradvolen/ValReplayViewer/issues"
+  },
+  "homepage": "https://github.com/bradvolen/ValReplayViewer#readme",
+  "devDependencies": {
+    "vite": "^2.8.4"
+  }
+}
