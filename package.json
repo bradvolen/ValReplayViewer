@@ -18,6 +18,17 @@
   },
   "homepage": "https://github.com/bradvolen/ValReplayViewer#readme",
   "devDependencies": {
+    "@iconify-json/mdi": "^1.1.0",
+    "@unocss/extractor-pug": "^0.26.3",
+    "@unocss/preset-icons": "^0.26.3",
+    "@unocss/preset-wind": "^0.26.3",
+    "@vitejs/plugin-vue": "^2.2.2",
+    "pug": "^3.0.2",
+    "unocss": "^0.26.3",
     "vite": "^2.8.4"
+  },
+  "dependencies": {
+    "@unocss/reset": "^0.26.3",
+    "vue": "^3.2.31"
   }
 }
