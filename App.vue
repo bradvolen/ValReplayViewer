@@ -4,23 +4,10 @@
     h1.font-bold.mr-4 Valorant Replay Viewer
     .flex-1.text-gray-500 Drop a video file anywhere or #[input(type="file" disabled)]
   .flex-1.overflow-hidden
-    .relative
+    //-.relative
       VideoPlayer.w-full(v-if="videos[0]" :video="videos[0]" @durationchange="onVideoDurationChange(0)" @timeupdate="onVideoTimeUpdate(0)" style="height:100%" @loadstart="onVideoLoadStart(0)")
-        //- 1243,48   12x21 -- min0
-        //- 1276,48   12x21 -- sec0
-        //- 1300,48   12x21 -- sec1
-      .absolute.bg-red.opacity-25(v-if="videos[0]?.el" style="width:12px;height:21px" :style="{left: `${1300 / videos[0].el.videoWidth * videos[0].el.clientWidth}px`, top: `${48 / videos[0].el.videoHeight * videos[0].el.clientHeight}px`}") &nbsp;
-    //-
-      .absolute.bg-red(v-if="videos[0]?.el" style="width:1px;height:1px" :style="{left: `${1246 / videos[0].el.videoWidth * videos[0].el.clientWidth}px`, top: `${52 / videos[0].el.videoHeight * videos[0].el.clientHeight}px`}") &nbsp;
-      .absolute.bg-red(v-if="videos[0]?.el" style="width:1px;height:1px" :style="{left: `${1246 / videos[0].el.videoWidth * videos[0].el.clientWidth}px`, top: `${61 / videos[0].el.videoHeight * videos[0].el.clientHeight}px`}") &nbsp;
-      .absolute.bg-red(v-if="videos[0]?.el" style="width:1px;height:1px" :style="{left: `${1246 / videos[0].el.videoWidth * videos[0].el.clientWidth}px`, top: `${70 / videos[0].el.videoHeight * videos[0].el.clientHeight}px`}") &nbsp;
-      .absolute.bg-red(v-if="videos[0]?.el" style="width:1px;height:1px" :style="{left: `${1246 / videos[0].el.videoWidth * videos[0].el.clientWidth}px`, top: `${79 / videos[0].el.videoHeight * videos[0].el.clientHeight}px`}") &nbsp;
-      .absolute.bg-red(v-if="videos[0]?.el" style="width:1px;height:1px" :style="{left: `${1259 / videos[0].el.videoWidth * videos[0].el.clientWidth}px`, top: `${52 / videos[0].el.videoHeight * videos[0].el.clientHeight}px`}") &nbsp;
-      .absolute.bg-red(v-if="videos[0]?.el" style="width:1px;height:1px" :style="{left: `${1259 / videos[0].el.videoWidth * videos[0].el.clientWidth}px`, top: `${61 / videos[0].el.videoHeight * videos[0].el.clientHeight}px`}") &nbsp;
-      .absolute.bg-red(v-if="videos[0]?.el" style="width:1px;height:1px" :style="{left: `${1259 / videos[0].el.videoWidth * videos[0].el.clientWidth}px`, top: `${70 / videos[0].el.videoHeight * videos[0].el.clientHeight}px`}") &nbsp;
-      .absolute.bg-red(v-if="videos[0]?.el" style="width:1px;height:1px" :style="{left: `${1259 / videos[0].el.videoWidth * videos[0].el.clientWidth}px`, top: `${79 / videos[0].el.videoHeight * videos[0].el.clientHeight}px`}") &nbsp;
-
-    //-.flex(:style="{height: videos.length >= 5 ? '60%' : (videos.length > 2 ? '50%': '100%')}")
+      .absolute.bg-red.opacity-50(v-if="videos[0]?.el" :style="{height: `${37 / videos[0].el.videoWidth * videos[0].el.clientWidth}px`, width: `${21 / videos[0].el.videoWidth * videos[0].el.clientWidth}px`, left: `${1243 / videos[0].el.videoWidth * videos[0].el.clientWidth}px`, top: `${48 / videos[0].el.videoHeight * videos[0].el.clientHeight}px`}") &nbsp;
+    .flex(:style="{height: videos.length >= 5 ? '60%' : (videos.length > 2 ? '50%': '100%')}")
       //- XXX it shouldn't be the first but rather the longest video that updates currentTime
       .flex-1.bg-black(v-if="videos[0]")
         VideoPlayer.h-full.mx-auto(:video="videos[0]" @durationchange="onVideoDurationChange(0)" @timeupdate="onVideoTimeUpdate(0)" @loadstart="onVideoLoadStart(0)")
@@ -56,9 +43,9 @@ const roundStarts = reactive([])
 // 1300,48   12x21 -- sec1
 // 8 points to sample relative to top left x+3 and x+16 and y+4 y+13 y+22 y+31
 // 0:30
-const min0 = [1243, 48, 12, 21]
-const sec0 = [1276, 48, 12, 21]
-const sec1 = [1300, 48, 12, 21]
+const min0 = [1243, 48, 21, 31]
+const sec0 = [1276, 48, 21, 31]
+const sec1 = [1300, 48, 21, 31]
 
 const detectClockTime = imageData => {
   return [
@@ -78,54 +65,36 @@ const isEqual = (arr0, arr1) => {
   return true
 }
 
+const colorAt = (imageData, x, y) => {
+  const offset = (y * imageData.width + x) * 4
+  return {
+    r: imageData.data[offset+0],
+    g: imageData.data[offset+1],
+    b: imageData.data[offset+2],
+  } // , imageData.data[offset+3]]
+}
+
+// XXX depending on whether shop is open
+const isWhite = ({ r, g, b }) => {
+  return r > 230 && g > 230 && b > 230
+}
+
 // we know how wide the number is and know how many parts we need to sample to detect
 // we should know the midpoints of each number
 const detectNumberAt = (imageData, [x, y, w, h]) => {
-  const ys = []
-  // high-low/sample
-  for (let x = low; x <= high; x += 2) {
-    ys.push(countCrossesOfWhiteFromTopAt(imageData, x))
+  // 0 3
+  // 1 4
+  // 2 5
+  const w0 = isWhite(colorAt(imageData, x + w * 0.25, y + h * 0.25))
+  const w1 = isWhite(colorAt(imageData, x + w * 0.25, y + h * 0.50))
+  const w2 = isWhite(colorAt(imageData, x + w * 0.25, y + h * 0.75))
+  const w3 = isWhite(colorAt(imageData, x + w * 0.75, y + h * 0.25))
+  const w4 = isWhite(colorAt(imageData, x + w * 0.75, y + h * 0.50))
+  const w5 = isWhite(colorAt(imageData, x + w * 0.75, y + h * 0.75))
+  if (w0 && w1 && w2 && w3 && w4 && w5) {
+    return 0
   }
-  if (ys[8] === 0 && ys[3] !== 0) {
-    return 1
-  }
-  // TODO if the x of the shop is open, look for different colors for the number! (blur)
-  // can make these speedier by mapping this array to num
-  if (isEqual(ys, [2, 2, 4, 4, 4, 6, 8, 2, 2, 2, 0])) return 0 
-  if (isEqual(ys, [2, 2, 4, 4, 4, 4, 4, 4, 2, 0, 0])) return 0
-  if (isEqual(ys, [2, 2, 4, 4, 4, 4, 4, 4, 2, 2, 0])) return 0
-  if (isEqual(ys, [4, 4, 6, 6, 6, 6, 6, 4, 4, 0, 0])) return 2
-  if (isEqual(ys, [4, 4, 4, 6, 6, 6, 6, 6, 4, 0, 0])) return 3
-  if (isEqual(ys, [2, 4, 4, 4, 4, 4, 4, 2, 2, 2, 0])) return 4
-  if (isEqual(ys, [2, 4, 4, 6, 6, 6, 6, 4, 2, 2, 0])) return 5
-  if (isEqual(ys, [2, 4, 4, 4, 6, 6, 6, 2, 2, 2, 0])) return 6 // XXX wrong?
-  if (isEqual(ys, [2, 4, 4, 4, 6, 6, 6, 4, 2, 2, 0])) return 6
-  if (isEqual(ys, [2, 2, 4, 4, 4, 4, 4, 2, 2, 0, 0])) return 7
-  if (isEqual(ys, [4, 4, 6, 6, 6, 6, 6, 4, 4, 2, 0])) return 8
-  if (isEqual(ys, [2, 4, 6, 6, 6, 6, 4, 2, 2, 2, 0])) return 9 // XXX wrong?
-  if (isEqual(ys, [2, 2, 6, 6, 6, 6, 4, 2, 2, 4, 0])) return 9
-  if (isEqual(ys, [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0])) return // probably shop open
-  console.log('>', low, ys)
-}
-
-// TODO when buy shop is open and there is blur this doesn't detect the white!!!
-const countCrossesOfWhiteFromTopAt = (imageData, x) => {
-  let crosses = 0
-  let inWhite = false
-  for (let y = 0; y < imageData.height; y++) {
-    const offset = (y * imageData.width + x) * 4
-    const [r,g,b,a] = [imageData.data[offset+0], imageData.data[offset+1], imageData.data[offset+2], imageData.data[offset+3]]
-    const isWhite = r >= 230 && g >= 230 && b >= 230
-    if (inWhite !== isWhite) {
-      crosses++
-      inWhite = !inWhite
-    }
-    // TODO
-    if (y > 90) {
-      break
-    }
-  }
-  return crosses
+  // TODO figure out which points to sample...
 }
 
 const currentTime = ref(0)
@@ -213,7 +182,6 @@ onBeforeUnmount(() => document.removeEventListener("keydown", onKeydown))
 // 35.678251 -> 0:29
 // 36.722539 -> 0:28
 // 37.339367 -> 0:27
-
 
 const playing = ref(false)
 const togglePlaying = () => playing.value = !playing.value
